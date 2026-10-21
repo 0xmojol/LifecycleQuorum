@@ -37,19 +37,17 @@ def make_sources(major, start, lts, maintenance, end, registry_maintenance=None)
             "end": end,
         }
     }
-    registry = [
-        {
-            "cycle": major,
-            "releaseDate": start,
-            "lts": lts or False,
-            "support": (
-                registry_maintenance
-                if registry_maintenance is not None
-                else (maintenance or False)
-            ),
-            "eol": end,
-        }
-    ]
+    registry = [{
+        "cycle": major,
+        "releaseDate": start,
+        "lts": lts or False,
+        "support": (
+            registry_maintenance
+            if registry_maintenance is not None
+            else (maintenance or False)
+        ),
+        "eol": end,
+    }]
     return json.dumps(official), json.dumps(registry)
 
 
@@ -112,13 +110,15 @@ class LifecycleRules(unittest.TestCase):
         self.assertEqual(result["state"], "UNRESOLVED")
 
     def test_malformed_source_is_unresolved(self):
-        result = contract._canonical_record("24", "2026-10-21", "not-json", "[]")
+        result = contract._canonical_record(
+            "24", "2026-10-21", "not-json", "[]"
+        )
         self.assertEqual(result["state"], "UNRESOLVED")
         self.assertEqual(result["reason_code"], "SOURCE_PARSE_ERROR")
 
     def test_dates_are_derived_without_float_or_local_clock(self):
         self.assertEqual(
-            contract.__derive_phase(
+            contract._derive_phase(
                 "2026-10-21",
                 "2026-05-05",
                 "2026-10-28",
