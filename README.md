@@ -56,7 +56,9 @@ python -m unittest discover -s tests -v
 python -m py_compile contracts/lifecycle_quorum.py
 ```
 
-Local tests exercise deterministic parsing and lifecycle boundaries with synthetic responses. They do not prove live web availability, GenVM compatibility, or real validator behavior. Before deployment, run one Studio smoke test for a version where both sources agree, one known EOL version, and one deliberately mismatched fixture in local tests. Inspect both consensus finality and GenVM execution success, then read the stored observation back.
+Eight local deterministic tests passed. They cover lifecycle boundaries, missing and malformed data, source disagreement, and the documented seven-day maintenance-boundary tolerance. Python syntax compilation also passed. These local checks do not by themselves prove GenVM compatibility or live validator behavior.
+
+A Studio full-consensus deployment was finalized and accepted. The contract was then tested with `assess_cycle("24")`; the transaction was finalized and accepted, GenVM execution succeeded, and the call returned `24:1`. A subsequent `get_latest("24")` read returned the stored observation with state `MAINTENANCE_LTS` and reason `SOURCES_CORROBORATED`.
 
 ## Scope and overlap
 
@@ -64,6 +66,14 @@ A targeted public search found adjacent GenLayer work on release provenance and 
 
 ## Current status
 
-The GitHub repository is <https://github.com/0xmojol/LifecycleQuorum>. The contract source has been published at `contracts/lifecycle_quorum.py`. Eight deterministic local tests passed and Python syntax compilation passed. The tests do not prove GenVM compatibility or live validator behavior.
+The public GitHub repository is <https://github.com/0xmojol/LifecycleQuorum>.
 
-No GenLayer deployment or Portal submission has occurred. Those steps require a successful Studio full-consensus smoke test and a user-authorized wallet transaction.
+The contract is deployed on GenLayer Studio, not mainnet:
+
+- Contract address: `0xb3b80097F0e467cD36eE90e9282AF5E834DE5d39`
+- Deploy transaction: <https://explorer-studio.genlayer.com/tx/0xc6f906fc0e16ffabcfe6b0ae2f7956483ce00a03a80ef9e8a6518b8db7b2ecfe>
+- Successful `assess_cycle("24")` transaction: <https://explorer-studio.genlayer.com/tx/0x9407fbaba4bf8668464e2108d3438e74806790cabbd192a8848e41c4ef97bdac>
+
+The first accepted observation is for Node.js 24, assessed as of `2026-10-21`. Its state is `MAINTENANCE_LTS`. The leader and validators agreed on the normalized lifecycle record and both source hashes. The stored observation was successfully read back with `get_latest("24")`.
+
+Eight local tests passed and Python syntax compilation passed. The Portal submission has not yet been made.
